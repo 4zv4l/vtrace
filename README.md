@@ -1,2 +1,2 @@
 # vtrace
-basic ptrace/seccomp lib in vlang
+basic ptrace/seccomp test in vlang
