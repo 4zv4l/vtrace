@@ -22,6 +22,8 @@ fn main() {
         }
         else { // parent
             ptrace.wait(pid)
+            ptrace.set_options(pid, .trace_sys_good)
+            ptrace.set_options(pid, .exit_kill)
             C.ptrace(C.PTRACE_SETOPTIONS, pid, 0, C.PTRACE_O_TRACESYSGOOD)
             for process_alive {
                 // before syscall
