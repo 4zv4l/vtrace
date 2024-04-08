@@ -8,14 +8,24 @@ struct C.user_regs_struct {
     rdi usize
     rsi usize
     rdx usize
-    // incomplete
 }
 fn C.WIFSTOPPED(int) int
 fn C.WSTOPSIG(int) int
 
+// currently supported ptrace options
+pub enum Ptrace_opt {
+    trace_sys_good = C.PTRACE_O_TRACESYSGOOD
+    exit_kill = C.PTRACE_O_EXITKILL
+}
+
 // become a tracee
 pub fn trace_me() {
     C.ptrace(C.PTRACE_TRACEME, 0, 0, 0)
+}
+
+// set ptrace options
+pub fn set_options(pid int, option Ptrace_opt) {
+    C.ptrace(C.PTRACE_SETOPTIONS, pid, 0, option)
 }
 
 // breakpoint at next syscall entry/exit
