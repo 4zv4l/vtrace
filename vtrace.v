@@ -9,6 +9,7 @@ fn main() {
     }
 
     pid := os.fork()
+    mut process_alive := true
     match pid {
         -1 { // error
             eprintln("fork(): ${os.last_error().msg()}")
@@ -22,14 +23,14 @@ fn main() {
         else { // parent
             ptrace.wait(pid)
             C.ptrace(C.PTRACE_SETOPTIONS, pid, 0, C.PTRACE_O_TRACESYSGOOD)
-            for {
+            for process_alive {
                 // before syscall
                 if !ptrace.wait_for_syscall(pid) { break }
                 mut regs := ptrace.get_regs(pid)
                 println("${seccomp.syscall_resolve_num(regs.orig_rax)}")
 
                 // after syscall
-                if !ptrace.wait_for_syscall(pid) { break }
+                if !ptrace.wait_for_syscall(pid) { process_alive = false }
                 regs = ptrace.get_regs(pid)
                 println("=> ${regs.rax}")
             }
